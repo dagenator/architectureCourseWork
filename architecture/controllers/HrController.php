@@ -9,28 +9,31 @@ class HrController extends Controller
 {
     public function actionIndex()
     {
+        $this->goToLoginIfGuest();
+
         $mentors = $this->getMentors();
-        var_dump('                                                                                  ');
-        var_dump($mentors);
+
 
         return $this->render('index', [
             'mentors' => $mentors
         ]);
     }
 
+    private function goToLoginIfGuest()
+    {
+        $id = Yii::$app->user->id;
+        if($id ==null) {
+            $this->redirect(['site/login']);
+        }
+    }
+
     public function actionMentor($id)
     {
-        var_dump('________________MentorInfo____________');
+        $this->goToLoginIfGuest();
+
         $mentor = $this->getMentorInfo($id);
-        var_dump($mentor);
         $mentor_students = $this->getMentorStudents($id);
-        var_dump('________________________________________________________________________________________');
-        var_dump('________________MentorStudents____________');
-        var_dump($mentor_students);
         $students = $this->getStudents();
-        var_dump('_____________________________________________________________________________________');
-        var_dump('________________allStudents____________');
-        var_dump($students);
 
         return $this->render('mentor', [
             'mentors' => $mentor,
@@ -42,6 +45,8 @@ class HrController extends Controller
 
     public function actionStudentomentor($id_mentor, $id_student)
     {
+        $this->goToLoginIfGuest();
+
         $result = $this->addNewStudentToMentor($id_mentor, $id_student);
 
     }
@@ -72,6 +77,7 @@ class HrController extends Controller
 
     public function addNewStudentToMentor($mentor_id, $student_id)
     {
+        $this->goToLoginIfGuest();
 
         $newId = Yii::$app->db->createCommand('select max(id) from mentor_student')->queryScalar();
         var_dump($newId);
@@ -83,5 +89,7 @@ class HrController extends Controller
         var_dump($result);
         return $result;
     }
+
+
 
 }
